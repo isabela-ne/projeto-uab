@@ -38,5 +38,10 @@ def create_app():
     @app.route('/')
     def index():
         return redirect(url_for('catalog.index'))
+    # Seed automático ao iniciar
+    with app.app_context():
+        db.create_all()
+        from scripts.seed import run_seed
+        run_seed()
 
     return app

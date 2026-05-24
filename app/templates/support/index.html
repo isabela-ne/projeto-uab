@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="fw-bold">🎧 Chamados de Suporte</h2>
+  <a href="{{ url_for('support.novo') }}" class="btn btn-danger">+ Novo Chamado</a>
+</div>
+{% if tickets %}
+<div class="table-responsive">
+  <table class="table table-hover bg-white rounded-3 overflow-hidden shadow-sm">
+    <thead class="table-danger">
+      <tr><th>#</th><th>Assunto</th><th>Status</th><th>Data</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for t in tickets %}
+      <tr>
+        <td>{{ t.id }}</td>
+        <td>{{ t.assunto }}</td>
+        <td>
+          {% if t.status == 'Aberto' %}<span class="badge bg-success">Aberto</span>
+          {% elif t.status == 'Em Andamento' %}<span class="badge bg-warning text-dark">Em Andamento</span>
+          {% else %}<span class="badge bg-secondary">{{ t.status }}</span>{% endif %}
+        </td>
+        <td>{{ t.created_at.strftime('%d/%m/%Y') }}</td>
+        <td><a href="{{ url_for('support.detalhe', ticket_id=t.id) }}" class="btn btn-sm btn-outline-danger">Ver</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="alert alert-info">Nenhum chamado aberto ainda.</div>
+{% endif %}
+{% endblock %}

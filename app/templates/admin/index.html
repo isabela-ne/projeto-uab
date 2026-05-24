@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">Painel Administrativo</h2>
+<div class="row">
+  <div class="col-md-4 mb-3">
+    <div class="card text-center p-3">
+      <h5>Produtos</h5>
+      <p class="text-muted">Gerenciar catálogo</p>
+      <a href="#" class="btn btn-danger btn-sm">Acessar</a>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card text-center p-3">
+      <h5>Pedidos</h5>
+      <p class="text-muted">Gerenciar pedidos</p>
+      <a href="#" class="btn btn-danger btn-sm">Acessar</a>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card text-center p-3">
+      <h5>Suporte</h5>
+      <p class="text-muted">Ver chamados</p>
+      <a href="{{ url_for('support.index') }}" class="btn btn-danger btn-sm">Acessar</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

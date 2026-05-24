@@ -1,44 +1,70 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2 class="mb-4">Catálogo Pokémon</h2>
 
-<div class="row">
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="fw-bold">⚡ Catálogo Pokémon</h2>
+  <span class="text-muted">{{ produtos|length }} produtos</span>
+</div>
+
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
   {% for p in produtos %}
-    <div class="col-md-3 mb-4">
-      <div class="card h-100">
+  <div class="col">
+    <div class="card h-100 product-card">
+      <div class="product-img-wrap">
         {% if p.image_url %}
-          <img src="{{ p.image_url }}" class="card-img-top" style="height:180px;object-fit:cover">
+          <img src="{{ p.image_url }}" alt="{{ p.nome }}" class="product-img">
         {% else %}
-          <div class="bg-light d-flex align-items-center justify-content-center" style="height:180px">
-            <span class="text-muted">Sem imagem</span>
-          </div>
+          <div class="product-img-placeholder"><span>Sem imagem</span></div>
         {% endif %}
-        <div class="card-body d-flex flex-column">
-          <h6 class="card-title">{{ p.nome }}</h6>
-          <p class="text-danger fw-bold">R$ {{ "%.2f"|format(p.preco) }}</p>
-          <small class="text-muted">Estoque: {{ p.estoque }}</small>
-          <div class="mt-auto pt-2">
-            {% if current_user.is_authenticated and p.is_available() %}
-              <form method="POST" action="{{ url_for('cart.add', produto_id=p.id) }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <input type="hidden" name="quantidade" value="1">
-                <button class="btn btn-danger w-100 btn-sm">
-                  Adicionar ao carrinho
-                </button>
-              </form>
-            {% elif not current_user.is_authenticated %}
-              <a href="{{ url_for('auth.login') }}" class="btn btn-outline-danger w-100 btn-sm">
-                Login para comprar
-              </a>
-            {% else %}
-              <button class="btn btn-secondary w-100 btn-sm" disabled>Esgotado</button>
-            {% endif %}
+        {% if not p.is_available() %}
+          <div class="sold-out-overlay">Esgotado</div>
+        {% endif %}
+      </div>
+      <div class="card-body d-flex flex-column p-3">
+        <p class="product-category mb-1">{{ p.categoria.nome if p.categoria else '' }}</p>
+        <h6 class="product-name mb-2">{{ p.nome }}</h6>
+        <div class="mt-auto">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="product-price">R$ {{ "%.2f"|format(p.preco) }}</span>
+            <span class="stock-badge {% if p.estoque <= 5 %}low{% endif %}">{{ p.estoque }} un.</span>
           </div>
+          {% if current_user.is_authenticated and p.is_available() %}
+            <form method="POST" action="{{ url_for('cart.add', produto_id=p.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="quantidade" value="1">
+              <button class="btn btn-add w-100">🛒 Adicionar</button>
+            </form>
+          {% elif not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.login') }}" class="btn btn-login w-100">Faça login para comprar</a>
+          {% else %}
+            <button class="btn btn-esgotado w-100" disabled>Esgotado</button>
+          {% endif %}
         </div>
       </div>
     </div>
+  </div>
   {% else %}
-    <p class="text-muted">Nenhum produto cadastrado ainda.</p>
+    <div class="col-12"><div class="alert alert-info">Nenhum produto cadastrado ainda.</div></div>
   {% endfor %}
 </div>
+
+<style>
+.product-card{border:none;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,0.08);transition:transform 0.2s,box-shadow 0.2s;overflow:hidden}
+.product-card:hover{transform:translateY(-6px);box-shadow:0 8px 24px rgba(220,53,69,0.15)}
+.product-img-wrap{position:relative;background:#fff;height:200px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid #f0f0f0}
+.product-img{max-height:190px;max-width:95%;object-fit:contain;transition:transform 0.3s}
+.product-card:hover .product-img{transform:scale(1.05)}
+.product-img-placeholder{color:#ccc;font-size:14px}
+.sold-out-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px}
+.product-category{font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#dc3545;font-weight:600}
+.product-name{font-size:14px;font-weight:700;color:#212529;line-height:1.3}
+.product-price{font-size:18px;font-weight:800;color:#dc3545}
+.stock-badge{font-size:11px;padding:3px 8px;border-radius:20px;background:#e8f5e9;color:#2e7d32;font-weight:600}
+.stock-badge.low{background:#fff3e0;color:#e65100}
+.btn-add{background:#dc3545;color:white;border:none;border-radius:8px;padding:8px;font-size:13px;font-weight:600;transition:background 0.2s}
+.btn-add:hover{background:#b02a37;color:white}
+.btn-login{background:transparent;color:#dc3545;border:1.5px solid #dc3545;border-radius:8px;padding:8px;font-size:12px;font-weight:600;transition:all 0.2s}
+.btn-login:hover{background:#dc3545;color:white}
+.btn-esgotado{background:#e9ecef;color:#adb5bd;border:none;border-radius:8px;padding:8px;font-size:13px}
+</style>
 {% endblock %}

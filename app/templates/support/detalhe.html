@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4>Chamado #{{ ticket.id }} — {{ ticket.assunto }}</h4>
+  <span class="badge fs-6
+    {% if ticket.status == 'Aberto' %}bg-success
+    {% elif ticket.status == 'Em Andamento' %}bg-warning text-dark
+    {% else %}bg-secondary{% endif %}">
+    {{ ticket.status }}
+  </span>
+</div>
+<div class="mb-4">
+  {% for msg in ticket.mensagens %}
+  <div class="card mb-3 {% if msg.autor_id == current_user.id %}border-danger{% endif %}">
+    <div class="card-body">
+      <div class="d-flex justify-content-between mb-2">
+        <strong>{{ msg.autor.nome }}</strong>
+        <small class="text-muted">{{ msg.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+      </div>
+      <p class="mb-0">{{ msg.mensagem }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% if ticket.status != 'Encerrado' %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="mb-3">
+        <label class="form-label fw-bold">Responder</label>
+        <textarea name="mensagem" class="form-control" rows="3" placeholder="Digite sua resposta..."></textarea>
+      </div>
+      {% if current_user.role in ['Administrador', 'Atendente'] %}
+      <div class="mb-3">
+        <label class="form-label fw-bold">Atualizar status</label>
+        <select name="status" class="form-select">
+          <option value="">Manter status atual</option>
+          <option value="Em Andamento">Em Andamento</option>
+          <option value="Encerrado">Encerrado</option>
+          <option value="Reaberto">Reaberto</option>
+        </select>
+      </div>
+      {% endif %}
+      <button type="submit" class="btn btn-danger">Enviar resposta</button>
+      <a href="{{ url_for('support.index') }}" class="btn btn-outline-secondary ms-2">Voltar</a>
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
