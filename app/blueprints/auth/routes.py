@@ -74,3 +74,40 @@ def logout():
     logout_user()
     flash('Você saiu com sucesso.', 'info')
     return redirect(url_for('auth.login'))
+
+@auth_bp.route('/perfil', methods=['GET', 'POST'])
+@login_required
+def perfil():
+    from flask_login import current_user
+    if request.method == 'POST':
+        nome = request.form.get('nome', '').strip()
+        email = request.form.get('email', '').strip()
+        senha_atual = request.form.get('senha_atual', '')
+        nova_senha = request.form.get('nova_senha', '')
+
+        if not nome or not email:
+            flash('Nome e e-mail são obrigatórios.', 'danger')
+            return redirect(url_for('auth.perfil'))
+
+        if email != current_user.email:
+            if User.query.filter_by(email=email).first():
+                flash('Este e-mail já está em uso.', 'warning')
+                return redirect(url_for('auth.perfil'))
+
+        current_user.nome = nome
+        current_user.email = email
+
+        if nova_senha:
+            if not current_user.check_password(senha_atual):
+                flash('Senha atual incorreta.', 'danger')
+                return redirect(url_for('auth.perfil'))
+            if len(nova_senha) < 6:
+                flash('A nova senha deve ter pelo menos 6 caracteres.', 'warning')
+                return redirect(url_for('auth.perfil'))
+            current_user.set_password(nova_senha)
+
+        db.session.commit()
+        flash('Perfil atualizado com sucesso!', 'success')
+        return redirect(url_for('auth.perfil'))
+
+    return render_template('auth/perfil.html')

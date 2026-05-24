@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <div style="width:64px;height:64px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#fff;font-weight:900;box-shadow:0 4px 0 #b01f14">
+        {{ current_user.nome[0].upper() }}
+      </div>
+      <div>
+        <h3 class="fw-bold mb-0" style="font-family:'Fredoka One',cursive">{{ current_user.nome }}</h3>
+        <span class="badge {% if current_user.role == 'Administrador' %}bg-danger{% elif current_user.role == 'Atendente' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+          {{ current_user.role }}
+        </span>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header">👤 Dados Pessoais</div>
+      <div class="card-body p-4">
+        <form method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Nome</label>
+            <input type="text" name="nome" class="form-control" value="{{ current_user.nome }}" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">E-mail</label>
+            <input type="email" name="email" class="form-control" value="{{ current_user.email }}" required>
+          </div>
+
+          <hr class="my-4">
+          <h6 class="fw-bold mb-3">🔒 Alterar Senha <small class="text-muted fw-normal">(opcional)</small></h6>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Senha Atual</label>
+            <input type="password" name="senha_atual" class="form-control" placeholder="Digite sua senha atual">
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-bold">Nova Senha</label>
+            <input type="password" name="nova_senha" class="form-control" placeholder="Mínimo 6 caracteres">
+          </div>
+
+          <button type="submit" class="btn btn-danger w-100">
+            <i class="bi bi-check-circle me-2"></i>Salvar Alterações
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">📦 Resumo da Conta</div>
+      <div class="card-body p-4">
+        <div class="row text-center g-3">
+          <div class="col-4">
+            <div class="p-3 rounded-3" style="background:#fff5f5">
+              <div style="font-size:1.8rem;font-family:'Fredoka One',cursive;color:var(--red)">
+                {{ current_user.orders|length }}
+              </div>
+              <small class="text-muted fw-bold">Pedidos</small>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="p-3 rounded-3" style="background:#f0faf0">
+              <div style="font-size:1.8rem;font-family:'Fredoka One',cursive;color:#22c55e">
+                {{ current_user.tickets|length }}
+              </div>
+              <small class="text-muted fw-bold">Chamados</small>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="p-3 rounded-3" style="background:#fffbeb">
+              <div style="font-size:1.8rem;font-family:'Fredoka One',cursive;color:#f59e0b">
+                {{ current_user.role[0] }}
+              </div>
+              <small class="text-muted fw-bold">Perfil</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
