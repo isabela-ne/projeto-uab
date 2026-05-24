@@ -7,7 +7,7 @@
     <thead class="table-light">
       <tr>
         <th>Produto</th>
-        <th>Preco unit.</th>
+        <th>Preço unit.</th>
         <th>Quantidade</th>
         <th>Subtotal</th>
         <th></th>
@@ -33,6 +33,9 @@
 <div class="card mt-3" style="max-width:300px;margin-left:auto">
   <div class="card-body">
     <h5>Total: <strong class="text-danger">R$ {{ "%.2f"|format(total) }}</strong></h5>
+    <a href="{{ url_for('checkout.index') }}" class="btn btn-danger w-100 mt-2">
+      Finalizar compra
+    </a>
     <a href="{{ url_for('catalog.index') }}" class="btn btn-outline-secondary w-100 mt-2">
       Continuar comprando
     </a>
@@ -43,7 +46,7 @@
 </div>
 {% else %}
 <div class="alert alert-info">
-  Seu carrinho esta vazio.
+  Seu carrinho está vazio.
   <a href="{{ url_for('catalog.index') }}">Ver produtos</a>
 </div>
 {% endif %}

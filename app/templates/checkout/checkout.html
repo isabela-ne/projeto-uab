@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">Finalizar Compra</h2>
+<div class="row">
+
+  <!-- Resumo do pedido -->
+  <div class="col-md-5 mb-4">
+    <div class="card">
+      <div class="card-header fw-bold">Resumo do pedido</div>
+      <div class="card-body">
+        <table class="table table-sm">
+          <tbody>
+            {% for pid, item in carrinho.items() %}
+            <tr>
+              <td>{{ item.nome }} x{{ item.quantidade }}</td>
+              <td class="text-end">R$ {{ "%.2f"|format(item.preco * item.quantidade) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="fw-bold">
+              <td>Total</td>
+              <td class="text-end text-danger">R$ {{ "%.2f"|format(total) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulário -->
+  <div class="col-md-7">
+    <form method="POST" action="{{ url_for('checkout.finalizar') }}">
+
+      <h5 class="mb-3">Endereço de entrega</h5>
+      <div class="row g-2 mb-3">
+        <div class="col-md-8">
+          <input type="text" name="rua" class="form-control" placeholder="Rua / Avenida" required>
+        </div>
+        <div class="col-md-4">
+          <input type="text" name="numero" class="form-control" placeholder="Número" required>
+        </div>
+        <div class="col-md-6">
+          <input type="text" name="bairro" class="form-control" placeholder="Bairro" required>
+        </div>
+        <div class="col-md-6">
+          <input type="text" name="cep" class="form-control" placeholder="CEP (00000-000)" required>
+        </div>
+        <div class="col-md-8">
+          <input type="text" name="cidade" class="form-control" placeholder="Cidade" required>
+        </div>
+        <div class="col-md-4">
+          <input type="text" name="estado" class="form-control" placeholder="UF" maxlength="2" required>
+        </div>
+      </div>
+
+      <h5 class="mb-3">Forma de pagamento</h5>
+      <div class="mb-3">
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="pagamento" value="pix" id="pix" required>
+          <label class="form-check-label" for="pix">PIX — desconto imediato na confirmação</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="pagamento" value="boleto" id="boleto">
+          <label class="form-check-label" for="boleto">Boleto Bancário — vence em 3 dias úteis</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="pagamento" value="cartao" id="cartao">
+          <label class="form-check-label" for="cartao">Cartão de Crédito</label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-danger w-100 mt-2">Confirmar pedido</button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}
