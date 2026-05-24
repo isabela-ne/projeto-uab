@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Atendentes</h2>
+  <a href="{{ url_for('admin.atendente_novo') }}" class="btn btn-danger">+ Novo atendente</a>
+</div>
+<table class="table table-hover">
+  <thead class="table-dark">
+    <tr><th>Nome</th><th>E-mail</th><th>Status</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for a in atendentes %}
+    <tr>
+      <td>{{ a.nome }}</td>
+      <td>{{ a.email }}</td>
+      <td>{{ 'Ativo' if a.ativo else 'Inativo' }}</td>
+      <td>
+        <form method="POST" action="{{ url_for('admin.atendente_excluir', id=a.id) }}" class="d-inline">
+          <button class="btn btn-sm btn-outline-danger"
+                  onclick="return confirm('Remover {{ a.nome }}?')">Excluir</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

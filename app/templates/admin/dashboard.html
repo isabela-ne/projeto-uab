@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">Painel Administrativo</h2>
+<div class="row g-3">
+  <div class="col-md-3">
+    <div class="card text-white bg-danger">
+      <div class="card-body">
+        <h5 class="card-title">Produtos</h5>
+        <p class="display-6">{{ total_produtos }}</p>
+        <a href="{{ url_for('admin.produtos') }}" class="btn btn-light btn-sm">Gerenciar</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-dark">
+      <div class="card-body">
+        <h5 class="card-title">Usuários</h5>
+        <p class="display-6">{{ total_usuarios }}</p>
+        <a href="{{ url_for('admin.atendentes') }}" class="btn btn-light btn-sm">Atendentes</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

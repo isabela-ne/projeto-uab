@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Produtos</h2>
+  <a href="{{ url_for('admin.produto_novo') }}" class="btn btn-danger">+ Novo produto</a>
+</div>
+<table class="table table-hover">
+  <thead class="table-dark">
+    <tr><th>Nome</th><th>Preço</th><th>Estoque</th><th>Categoria</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for p in produtos %}
+    <tr>
+      <td>{{ p.nome }}</td>
+      <td>R$ {{ "%.2f"|format(p.preco) }}</td>
+      <td>{{ p.estoque }}</td>
+      <td>{{ p.categoria.nome if p.categoria else '—' }}</td>
+      <td>
+        <a href="{{ url_for('admin.produto_editar', id=p.id) }}" class="btn btn-sm btn-outline-secondary">Editar</a>
+        <form method="POST" action="{{ url_for('admin.produto_excluir', id=p.id) }}" class="d-inline">
+          <button class="btn btn-sm btn-outline-danger"
+                  onclick="return confirm('Excluir {{ p.nome }}?')">Excluir</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
