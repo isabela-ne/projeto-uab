@@ -1,27 +1,51 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2 class="mb-4">Painel Administrativo</h2>
-<div class="row">
-  <div class="col-md-4 mb-3">
-    <div class="card text-center p-3">
-      <h5>Produtos</h5>
-      <p class="text-muted">Gerenciar catálogo</p>
-      <a href="#" class="btn btn-danger btn-sm">Acessar</a>
+<h2 class="fw-bold mb-4">🛠️ Painel Administrativo</h2>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="card text-center p-4 shadow-sm">
+      <div style="font-size:2.5rem">📦</div>
+      <h2 class="fw-bold text-danger">{{ total_produtos }}</h2>
+      <p class="text-muted mb-3">Produtos cadastrados</p>
+      <a href="{{ url_for('admin.produtos') }}" class="btn btn-danger btn-sm">Gerenciar</a>
     </div>
   </div>
-  <div class="col-md-4 mb-3">
-    <div class="card text-center p-3">
-      <h5>Pedidos</h5>
-      <p class="text-muted">Gerenciar pedidos</p>
-      <a href="#" class="btn btn-danger btn-sm">Acessar</a>
+  <div class="col-md-4">
+    <div class="card text-center p-4 shadow-sm">
+      <div style="font-size:2.5rem">��</div>
+      <h2 class="fw-bold text-danger">{{ total_usuarios }}</h2>
+      <p class="text-muted mb-3">Usuários cadastrados</p>
+      <a href="{{ url_for('admin.usuarios') }}" class="btn btn-danger btn-sm">Gerenciar</a>
     </div>
   </div>
-  <div class="col-md-4 mb-3">
-    <div class="card text-center p-3">
-      <h5>Suporte</h5>
-      <p class="text-muted">Ver chamados</p>
-      <a href="{{ url_for('support.index') }}" class="btn btn-danger btn-sm">Acessar</a>
+  <div class="col-md-4">
+    <div class="card text-center p-4 shadow-sm">
+      <div style="font-size:2.5rem">🎧</div>
+      <h2 class="fw-bold text-danger">—</h2>
+      <p class="text-muted mb-3">Chamados de suporte</p>
+      <a href="{{ url_for('support.index') }}" class="btn btn-danger btn-sm">Ver chamados</a>
     </div>
   </div>
 </div>
+
+{% if estoque_critico %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h5 class="fw-bold text-warning mb-3">⚠️ Estoque crítico (5 ou menos unidades)</h5>
+    <table class="table table-sm">
+      <thead><tr><th>Produto</th><th>Estoque</th><th></th></tr></thead>
+      <tbody>
+        {% for p in estoque_critico %}
+        <tr>
+          <td>{{ p.nome }}</td>
+          <td><span class="badge bg-warning text-dark">{{ p.estoque }} un.</span></td>
+          <td><a href="{{ url_for('admin.produto_editar', produto_id=p.id) }}" class="btn btn-sm btn-outline-danger">Editar</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
 {% endblock %}
