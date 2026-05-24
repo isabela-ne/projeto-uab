@@ -141,3 +141,28 @@ def escolher_frete():
         flash('Frete selecionado!', 'success')
 
     return redirect(url_for('cart.view'))
+@cart_bp.route('/cupom', methods=['POST'])
+@login_required
+def aplicar_cupom():
+    from app.models.coupon import Coupon
+    codigo = request.form.get('cupom', '').strip().upper()
+    cupom = Coupon.query.filter_by(codigo=codigo).first()
+    if not cupom or not cupom.is_valido():
+        flash('Cupom inválido ou expirado.', 'danger')
+        return redirect(url_for('cart.view'))
+    session['cupom'] = {
+        'codigo': cupom.codigo,
+        'desconto_pct': cupom.desconto_pct
+    }
+    session.modified = True
+    flash(f'Cupom {cupom.codigo} aplicado! {int(cupom.desconto_pct)}% de desconto.', 'success')
+    return redirect(url_for('cart.view'))
+
+
+@cart_bp.route('/cupom/remover', methods=['POST'])
+@login_required
+def remover_cupom():
+    session.pop('cupom', None)
+    session.modified = True
+    flash('Cupom removido.', 'info')
+    return redirect(url_for('cart.view'))

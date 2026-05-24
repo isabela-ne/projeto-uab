@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h4 class="mb-4">Novo Cupom</h4>
+        <form method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Código</label>
+            <input type="text" name="codigo" class="form-control" placeholder="Ex: POKEMON10" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Desconto (%)</label>
+            <input type="number" name="desconto_pct" class="form-control" min="1" max="100" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Validade (opcional)</label>
+            <input type="date" name="validade" class="form-control">
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-danger">Criar cupom</button>
+            <a href="{{ url_for('admin.cupons') }}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

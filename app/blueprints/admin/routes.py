@@ -188,3 +188,39 @@ def relatorios():
         pedidos_status=pedidos_status,
         receita_total=receita_total,
         total_pedidos=total_pedidos)
+@admin_bp.route('/cupons')
+@login_required
+@admin_required
+def cupons():
+    from app.models.coupon import Coupon
+    cupons = Coupon.query.all()
+    return render_template('admin/cupons.html', cupons=cupons)
+
+@admin_bp.route('/cupons/novo', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def cupom_novo():
+    from app.models.coupon import Coupon
+    from datetime import datetime
+    if request.method == 'POST':
+        codigo = request.form.get('codigo', '').strip().upper()
+        desconto_pct = float(request.form.get('desconto_pct', 0))
+        validade_str = request.form.get('validade', '')
+        validade = datetime.strptime(validade_str, '%Y-%m-%d') if validade_str else None
+        c = Coupon(codigo=codigo, desconto_pct=desconto_pct, validade=validade)
+        db.session.add(c)
+        db.session.commit()
+        flash('Cupom criado!', 'success')
+        return redirect(url_for('admin.cupons'))
+    return render_template('admin/cupom_form.html')
+
+@admin_bp.route('/cupons/<int:cupom_id>/toggle', methods=['POST'])
+@login_required
+@admin_required
+def cupom_toggle(cupom_id):
+    from app.models.coupon import Coupon
+    cupom = Coupon.query.get_or_404(cupom_id)
+    cupom.ativo = not cupom.ativo
+    db.session.commit()
+    flash('Cupom atualizado!', 'success')
+    return redirect(url_for('admin.cupons'))

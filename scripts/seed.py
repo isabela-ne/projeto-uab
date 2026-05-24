@@ -55,7 +55,24 @@ def run_seed():
                        estoque=estoque, categoria_id=cat_objs[cat].id,
                        image_url=img)
             db.session.add(p)
+# Cupons de desconto
+    from app.models.coupon import Coupon
+    from datetime import datetime, timedelta
 
+    cupons = [
+        ('POKEMON10', 10.0),
+        ('POKEPARA20', 20.0),
+        ('FRETEGRATIS', 100.0),
+    ]
+    for codigo, desconto in cupons:
+        if not Coupon.query.filter_by(codigo=codigo).first():
+            c = Coupon(
+                codigo=codigo,
+                desconto_pct=desconto,
+                ativo=True,
+                validade=datetime.utcnow() + timedelta(days=365)
+            )
+            db.session.add(c)
     db.session.commit()
     print('Seed executado!')
 
