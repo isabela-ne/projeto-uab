@@ -6,138 +6,437 @@
   <title>PokéPará</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --poke-red: #dc3545;
-      --poke-dark: #1a1a2e;
-      --poke-card: #ffffff;
+      --red:     #e63528;
+      --red2:    #ff5245;
+      --yellow:  #ffd93d;
+      --blue:    #3b82f6;
+      --green:   #22c55e;
+      --dark:    #1e1e2e;
+      --white:   #ffffff;
+      --gray-bg: #f8f9ff;
+      --card-shadow: 0 4px 0 rgba(0,0,0,0.12);
     }
 
     * { box-sizing: border-box; }
 
     body {
-      background: #f4f6f9;
-      font-family: 'Segoe UI', sans-serif;
+      background: var(--gray-bg);
+      font-family: 'Nunito', sans-serif;
+      color: var(--dark);
       display: flex;
       flex-direction: column;
       min-height: 100vh;
     }
 
-    main { flex: 1; }
+    main { flex: 1; padding: 2rem 0; }
 
-    /* ── Navbar ── */
+    /* ── NAVBAR ── */
     .navbar {
-      background: linear-gradient(135deg, #c0392b 0%, #dc3545 100%) !important;
-      box-shadow: 0 4px 20px rgba(220,53,69,0.4);
-      padding: 0.8rem 0;
+      background: var(--red) !important;
+      padding: 0;
+      border-bottom: 4px solid #b01f14;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
+
+    /* Pokéball line no topo */
+    .navbar::before {
+      content: '';
+      display: block;
+      height: 4px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--yellow) 0px, var(--yellow) 20px,
+        var(--red2) 20px, var(--red2) 40px
+      );
+    }
+
+    .navbar-inner {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+      padding: 0 1.5rem;
+    }
+
     .navbar-brand {
-      font-size: 1.6rem;
-      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px 10px 0;
+      text-decoration: none;
+      border-right: 2px solid rgba(255,255,255,0.2);
+      margin-right: 16px;
+    }
+
+    .pokeball-icon {
+      width: 40px;
+      height: 40px;
+      background: white;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+
+    .brand-text-wrap {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+    .brand-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.5rem;
+      color: #fff;
       letter-spacing: 1px;
-      color: #fff !important;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
     }
-    .navbar-brand span { color: #ffe066; }
-    .nav-link {
-      font-weight: 500;
-      color: rgba(255,255,255,0.9) !important;
-      transition: color 0.2s;
+    .brand-name em {
+      font-style: normal;
+      color: var(--yellow);
     }
-    .nav-link:hover { color: #ffe066 !important; }
-    .btn-nav-login {
-      border: 2px solid rgba(255,255,255,0.7);
-      color: #fff !important;
-      border-radius: 20px;
-      padding: 5px 16px;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-    .btn-nav-login:hover { background: rgba(255,255,255,0.15); }
-    .btn-nav-register {
-      background: #fff;
-      color: var(--poke-red) !important;
-      border-radius: 20px;
-      padding: 5px 16px;
+    .brand-tagline {
+      font-size: 0.62rem;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
       font-weight: 700;
+    }
+
+    /* Nav links */
+    .navbar-nav { align-items: center; }
+    .nav-link {
+      font-weight: 800 !important;
+      font-size: 0.88rem !important;
+      color: rgba(255,255,255,0.9) !important;
+      padding: 10px 14px !important;
+      border-radius: 0;
+      transition: all 0.15s;
+      letter-spacing: 0.3px;
+      border-bottom: 3px solid transparent;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+    .nav-link:hover {
+      color: var(--yellow) !important;
+      border-bottom-color: var(--yellow);
+      background: rgba(0,0,0,0.1);
+    }
+
+    .btn-nav-login {
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.5) !important;
+      color: #fff !important;
+      border-radius: 20px !important;
+      padding: 6px 18px !important;
+      font-weight: 800;
+      font-size: 0.85rem;
       transition: all 0.2s;
     }
-    .btn-nav-register:hover { background: #ffe066; }
+    .btn-nav-login:hover {
+      background: rgba(255,255,255,0.28) !important;
+      border-color: #fff !important;
+    }
+
+    .btn-nav-register {
+      background: var(--yellow) !important;
+      color: #b01f14 !important;
+      border-radius: 20px !important;
+      padding: 6px 18px !important;
+      font-weight: 900;
+      font-size: 0.85rem;
+      border: none !important;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+      transition: all 0.15s;
+    }
+    .btn-nav-register:hover {
+      background: #ffe066 !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+    }
+
     .dropdown-menu {
       border: none;
-      border-radius: 12px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-    }
-    .dropdown-item:hover { background: #fff5f5; color: var(--poke-red); }
-
-    /* ── Cards ── */
-    .card {
-      border: none;
       border-radius: 16px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15), 0 4px 0 rgba(0,0,0,0.08);
+      padding: 8px;
+      border-top: 3px solid var(--red);
+    }
+    .dropdown-item {
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 9px 14px;
+      transition: all 0.15s;
+    }
+    .dropdown-item:hover { background: #fff0f0; color: var(--red); }
+    .dropdown-divider { border-color: #f0f0f0; }
+
+    /* ── HERO BANNER ── */
+    .hero-banner {
+      background: linear-gradient(135deg, var(--dark) 0%, #2d1b69 100%);
+      padding: 12px 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-banner::after {
+      content: '⚡ 🎮 🌿 ⚡ 🎮 🌿 ⚡ 🎮 🌿 ⚡ 🎮 🌿 ⚡ 🎮 🌿';
+      position: absolute;
+      top: 50%;
+      left: -20px;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      opacity: 0.06;
+      white-space: nowrap;
+      width: 200%;
+      letter-spacing: 10px;
+    }
+    .hero-banner-text {
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.85rem;
+      letter-spacing: 3px;
+      color: var(--yellow);
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-banner-text span { color: rgba(255,255,255,0.5); margin: 0 12px; }
+
+    /* ── CARDS ── */
+    .card {
+      border: 2px solid #e8e8f0 !important;
+      border-radius: 18px !important;
+      background: var(--white);
+      box-shadow: var(--card-shadow);
       transition: transform 0.2s, box-shadow 0.2s;
     }
     .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(220,53,69,0.12);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 0 rgba(0,0,0,0.1), 0 12px 24px rgba(230,53,40,0.12);
+    }
+    .card-header {
+      background: transparent !important;
+      border-bottom: 2px solid #f0f0f8 !important;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      color: var(--dark);
+      padding: 14px 20px;
+      border-radius: 16px 16px 0 0 !important;
     }
 
-    /* ── Botões ── */
+    /* ── BUTTONS ── */
     .btn-danger {
-      background: linear-gradient(135deg, #c0392b, #dc3545);
-      border: none;
-      border-radius: 10px;
-      font-weight: 600;
+      background: var(--red) !important;
+      border: none !important;
+      border-radius: 12px !important;
+      font-weight: 800 !important;
+      font-family: 'Nunito', sans-serif !important;
+      box-shadow: 0 4px 0 #b01f14 !important;
+      transition: all 0.15s !important;
       letter-spacing: 0.3px;
     }
-    .btn-danger:hover { background: linear-gradient(135deg, #a93226, #c0392b); }
-    .btn-outline-danger { border-radius: 10px; font-weight: 600; }
+    .btn-danger:hover {
+      background: var(--red2) !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 0 #b01f14 !important;
+    }
+    .btn-danger:active {
+      transform: translateY(2px) !important;
+      box-shadow: 0 2px 0 #b01f14 !important;
+    }
+    .btn-outline-danger {
+      border-radius: 12px !important;
+      font-weight: 800 !important;
+      border: 2px solid var(--red) !important;
+      color: var(--red) !important;
+    }
+    .btn-outline-danger:hover {
+      background: var(--red) !important;
+      border-color: var(--red) !important;
+      color: #fff !important;
+    }
+    .btn-warning {
+      background: var(--yellow) !important;
+      color: #7a4500 !important;
+      border: none !important;
+      border-radius: 12px !important;
+      font-weight: 900 !important;
+      box-shadow: 0 4px 0 #d4a800 !important;
+    }
+    .btn-warning:hover {
+      background: #ffe066 !important;
+      transform: translateY(-2px) !important;
+    }
 
-    /* ── Alerts ── */
-    .alert { border-radius: 12px; border: none; }
+    /* ── ALERTS ── */
+    .alert {
+      border-radius: 14px !important;
+      border: none !important;
+      font-weight: 700 !important;
+      box-shadow: var(--card-shadow);
+    }
+    .alert-success { background: #ecfdf5; color: #065f46; border-left: 5px solid #22c55e !important; }
+    .alert-danger  { background: #fff1f0; color: #7f1d1d; border-left: 5px solid var(--red) !important; }
+    .alert-warning { background: #fffbeb; color: #78350f; border-left: 5px solid var(--yellow) !important; }
+    .alert-info    { background: #eff6ff; color: #1e3a8a; border-left: 5px solid var(--blue) !important; }
 
-    /* ── Footer ── */
-    footer {
-      background: linear-gradient(135deg, #1a1a2e 0%, #212529 100%);
-      color: #adb5bd;
-      text-align: center;
-      padding: 2rem 0;
+    /* ── TABLES ── */
+    .table { border-radius: 14px; overflow: hidden; }
+    thead.table-danger th {
+      background: var(--red) !important;
+      color: #fff !important;
+      font-family: 'Fredoka One', cursive;
       font-size: 0.85rem;
-      margin-top: auto;
+      letter-spacing: 0.5px;
+      border: none !important;
+      padding: 12px 16px;
     }
-    footer a { color: #ffe066; text-decoration: none; }
-    footer a:hover { color: #fff; }
-    footer .footer-brand {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 0.5rem;
+    .table-hover tbody tr:hover { background: #fff5f5; }
+
+    /* ── BADGES ── */
+    .badge {
+      border-radius: 8px !important;
+      font-weight: 800 !important;
+      font-size: 0.75rem;
+      padding: 5px 10px !important;
     }
 
-    /* ── Misc ── */
-    .badge { border-radius: 8px; }
-    .table { border-radius: 12px; overflow: hidden; }
-    thead.table-danger th { background: #f8d7da; color: #842029; font-weight: 700; }
+    /* ── TYPE CHIPS (Pokémon style) ── */
+    .type-chip {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.6rem;
+      color: var(--dark);
+      letter-spacing: 0.5px;
+    }
+    .section-title .accent { color: var(--red); }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      background: linear-gradient(135deg, var(--dark), #2d1b69);
+      padding: 2.5rem 0;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-header::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 4px;
+      background: repeating-linear-gradient(90deg, var(--red) 0, var(--red) 20px, var(--yellow) 20px, var(--yellow) 40px);
+    }
+    .page-header h1 {
+      font-family: 'Fredoka One', cursive;
+      color: #fff;
+      font-size: 2rem;
+      letter-spacing: 1px;
+    }
+    .page-header p { color: rgba(255,255,255,0.65); }
+
+    /* ── FORM CONTROLS ── */
+    .form-control, .form-select {
+      border: 2px solid #e8e8f0;
+      border-radius: 12px;
+      font-weight: 600;
+      padding: 10px 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(230,53,40,0.15);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark);
+      padding: 2.5rem 0 1.5rem;
+      margin-top: auto;
+      position: relative;
+    }
+    footer::before {
+      content: '';
+      display: block;
+      height: 6px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--red) 0, var(--red) 33.33%,
+        var(--yellow) 33.33%, var(--yellow) 66.66%,
+        #fff 66.66%, #fff 100%
+      );
+      position: absolute;
+      top: 0; left: 0; right: 0;
+    }
+    .footer-brand {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.5rem;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+    .footer-brand em { font-style: normal; color: var(--yellow); }
+    footer p { color: rgba(255,255,255,0.5); font-size: 0.82rem; }
+    footer a { color: var(--yellow); text-decoration: none; font-weight: 700; transition: color 0.2s; }
+    footer a:hover { color: #fff; }
+    .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin: 1rem 0; }
+    .footer-divider { border-color: rgba(255,255,255,0.1); }
+
+    /* ── MISC ── */
+    hr.colorful {
+      border: none;
+      height: 3px;
+      background: repeating-linear-gradient(90deg, var(--red) 0, var(--red) 20px, var(--yellow) 20px, var(--yellow) 40px, var(--blue) 40px, var(--blue) 60px, var(--green) 60px, var(--green) 80px);
+      border-radius: 2px;
+      margin: 2rem 0;
+    }
 
     {% block extra_style %}{% endblock %}
   </style>
 </head>
 <body>
 
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg">
-  <div class="container">
+  <div class="container navbar-inner">
     <a class="navbar-brand" href="{{ url_for('index') }}">
-      <span>⚡</span> PokéPará
+      <div class="pokeball-icon">⚡</div>
+      <div class="brand-text-wrap">
+        <span class="brand-name"><em>Poké</em>Pará</span>
+        <span class="brand-tagline">Loja Pokémon</span>
+      </div>
     </a>
-    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
-      <span class="navbar-toggler-icon"></span>
+
+    <button class="navbar-toggler border-0 ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
+      <i class="bi bi-list text-white fs-4"></i>
     </button>
+
     <div class="collapse navbar-collapse" id="navmenu">
-      <ul class="navbar-nav ms-auto align-items-center gap-2">
+      <ul class="navbar-nav ms-2 align-items-center gap-1 flex-grow-1">
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('catalog.index') }}">
-            <i class="bi bi-grid me-1"></i>Catálogo
+            <i class="bi bi-grid-3x3-gap me-1"></i>Catálogo
           </a>
         </li>
+
         {% if current_user.is_authenticated %}
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('cart.view') }}">
@@ -146,7 +445,7 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('orders.historico') }}">
-              <i class="bi bi-bag me-1"></i>Pedidos
+              <i class="bi bi-bag-check me-1"></i>Pedidos
             </a>
           </li>
           <li class="nav-item">
@@ -154,6 +453,11 @@
               <i class="bi bi-headset me-1"></i>Suporte
             </a>
           </li>
+        {% endif %}
+      </ul>
+
+      <ul class="navbar-nav align-items-center gap-2">
+        {% if current_user.is_authenticated %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
               <i class="bi bi-person-circle me-1"></i>{{ current_user.nome.split()[0] }}
@@ -162,11 +466,17 @@
               {% if current_user.role == 'Administrador' %}
                 <li>
                   <a class="dropdown-item" href="{{ url_for('admin.index') }}">
-                    <i class="bi bi-speedometer2 me-2"></i>Painel Admin
+                    <i class="bi bi-speedometer2 me-2 text-danger"></i>Painel Admin
                   </a>
                 </li>
                 <li><hr class="dropdown-divider"></li>
               {% endif %}
+              <li>
+                <a class="dropdown-item" href="#">
+                  <i class="bi bi-person me-2 text-primary"></i>Meu Perfil
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
               <li>
                 <a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
                   <i class="bi bi-box-arrow-right me-2"></i>Sair
@@ -176,10 +486,14 @@
           </li>
         {% else %}
           <li class="nav-item">
-            <a class="btn-nav-login nav-link" href="{{ url_for('auth.login') }}">Login</a>
+            <a class="btn-nav-login nav-link" href="{{ url_for('auth.login') }}">
+              <i class="bi bi-person me-1"></i>Entrar
+            </a>
           </li>
           <li class="nav-item">
-            <a class="btn-nav-register nav-link" href="{{ url_for('auth.register') }}">Cadastrar</a>
+            <a class="btn-nav-register nav-link" href="{{ url_for('auth.register') }}">
+              ⚡ Cadastrar
+            </a>
           </li>
         {% endif %}
       </ul>
@@ -187,24 +501,43 @@
   </div>
 </nav>
 
-<main class="container py-4">
-  {% with msgs = get_flashed_messages(with_categories=true) %}
-    {% for cat, msg in msgs %}
-      <div class="alert alert-{{ cat }} alert-dismissible fade show shadow-sm">
-        <i class="bi bi-info-circle me-2"></i>{{ msg }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    {% endfor %}
+
+<!-- Flash messages -->
+<div class="container mt-3">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+          <i class="bi bi-{% if category == 'success' %}check-circle-fill{% elif category == 'danger' %}exclamation-triangle-fill{% elif category == 'warning' %}exclamation-circle-fill{% else %}info-circle-fill{% endif %} fs-5"></i>
+          <span>{{ message }}</span>
+          <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
   {% endwith %}
-  {% block content %}{% endblock %}
+</div>
+
+<main>
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
 </main>
 
+<!-- Footer -->
 <footer>
-  <div class="container">
-    <p class="footer-brand mb-1">⚡ PokéPará</p>
-    <p class="mb-1">Todos os direitos reservados • IFTO/UAB 2026</p>
-    <p class="mb-0" style="font-size:0.75rem">
-      Desenvolvido com <span style="color:#dc3545">♥</span> para a disciplina de Desenvolvimento Web
+  <div class="container text-center">
+    <p class="footer-brand mb-1"><em>Poké</em>Pará ⚡</p>
+    <p class="mb-0">A loja Pokémon com alma da Amazônia 🌿</p>
+    <div class="footer-links">
+      <a href="{{ url_for('catalog.index') }}"><i class="bi bi-grid me-1"></i>Catálogo</a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('orders.historico') }}"><i class="bi bi-bag me-1"></i>Pedidos</a>
+        <a href="{{ url_for('support.index') }}"><i class="bi bi-headset me-1"></i>Suporte</a>
+      {% endif %}
+    </div>
+    <hr class="footer-divider">
+    <p class="mb-0" style="font-size:0.72rem; opacity:0.4">
+      © 2026 PokéPará · IFTO/UAB · Disciplina de Desenvolvimento Web · feito com ♥ e açaí
     </p>
   </div>
 </footer>
