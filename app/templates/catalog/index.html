@@ -1,11 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2 class="mb-4">Catálogo Pokémon</h2>
-{% if not current_user.is_authenticated %}
-  <div class="alert alert-info">
-    <a href="{{ url_for('auth.login') }}">Faça login</a> para comprar!
-  </div>
-{% endif %}
+
 <div class="row">
   {% for p in produtos %}
     <div class="col-md-3 mb-4">
@@ -17,15 +13,24 @@
             <span class="text-muted">Sem imagem</span>
           </div>
         {% endif %}
-        <div class="card-body">
+        <div class="card-body d-flex flex-column">
           <h6 class="card-title">{{ p.nome }}</h6>
           <p class="text-danger fw-bold">R$ {{ "%.2f"|format(p.preco) }}</p>
           <small class="text-muted">Estoque: {{ p.estoque }}</small>
-          <div class="mt-2">
-            {% if p.is_available() %}
-              <span class="badge bg-success">Disponível</span>
+          <div class="mt-auto pt-2">
+            {% if current_user.is_authenticated and p.is_available() %}
+              <form method="POST" action="{{ url_for('cart.add', produto_id=p.id) }}">
+                <input type="hidden" name="quantidade" value="1">
+                <button class="btn btn-danger w-100 btn-sm">
+                  Adicionar ao carrinho
+                </button>
+              </form>
+            {% elif not current_user.is_authenticated %}
+              <a href="{{ url_for('auth.login') }}" class="btn btn-outline-danger w-100 btn-sm">
+                Login para comprar
+              </a>
             {% else %}
-              <span class="badge bg-secondary">Esgotado</span>
+              <button class="btn btn-secondary w-100 btn-sm" disabled>Esgotado</button>
             {% endif %}
           </div>
         </div>

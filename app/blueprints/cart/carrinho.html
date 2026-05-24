@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">Meu Carrinho</h2>
+
+{% if carrinho %}
+<div class="table-responsive">
+  <table class="table align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Produto</th>
+        <th>Preço unit.</th>
+        <th>Quantidade</th>
+        <th>Subtotal</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pid, item in carrinho.items() %}
+      <tr>
+        <td>{{ item.nome }}</td>
+        <td>R$ {{ "%.2f"|format(item.preco) }}</td>
+        <td>{{ item.quantidade }}</td>
+        <td>R$ {{ "%.2f"|format(item.preco * item.quantidade) }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('cart.remove', pid=pid) }}">
+            <button class="btn btn-sm btn-outline-danger">Remover</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card mt-3" style="max-width:300px;margin-left:auto">
+  <div class="card-body">
+    <h5>Total: <strong class="text-danger">R$ {{ "%.2f"|format(total) }}</strong></h5>
+    <a href="{{ url_for('catalog.index') }}" class="btn btn-outline-secondary w-100 mt-2">
+      Continuar comprando
+    </a>
+    <form method="POST" action="{{ url_for('cart.clear') }}" class="mt-2">
+      <button class="btn btn-outline-danger w-100">Esvaziar carrinho</button>
+    </form>
+  </div>
+</div>
+
+{% else %}
+<div class="alert alert-info">
+  Seu carrinho está vazio. 
+  <a href="{{ url_for('catalog.index') }}">Ver produtos</a>
+</div>
+{% endif %}
+{% endblock %}
