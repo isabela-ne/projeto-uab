@@ -1,81 +1,135 @@
 {% extends 'base.html' %}
 {% block content %}
-<nav aria-label="breadcrumb" class="mb-3">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="{{ url_for('catalog.index') }}">Catálogo</a></li>
-    <li class="breadcrumb-item text-danger">{{ produto.nome }}</li>
-  </ol>
-</nav>
-
-<div class="row g-4">
+<div class="row g-4 mb-5">
   <div class="col-md-5">
-    <div class="card p-3 text-center">
+    <div class="card shadow-sm p-3 text-center">
       {% if produto.image_url %}
-        <img src="{{ produto.image_url }}" alt="{{ produto.nome }}"
-             style="max-height:350px;object-fit:contain;width:100%">
+        <img src="{{ produto.image_url }}" style="max-height:350px;object-fit:contain" class="img-fluid">
       {% else %}
-        <div class="bg-light d-flex align-items-center justify-content-center" style="height:350px">
-          <span class="text-muted fs-5">Sem imagem</span>
+        <div class="bg-light d-flex align-items-center justify-content-center" style="height:300px">
+          <span class="text-muted">Sem imagem</span>
         </div>
       {% endif %}
     </div>
   </div>
-
   <div class="col-md-7">
-    <p class="text-danger fw-bold text-uppercase small mb-1">
-      {{ produto.categoria.nome if produto.categoria else '' }}
-    </p>
-    <h2 class="fw-bold mb-2">{{ produto.nome }}</h2>
-    <h3 class="text-danger fw-bold mb-3">R$ {{ "%.2f"|format(produto.preco) }}</h3>
+    <p class="text-danger fw-bold text-uppercase small mb-1">{{ produto.categoria.nome if produto.categoria else '' }}</p>
+    <h2 class="fw-bold">{{ produto.nome }}</h2>
 
-    <p class="text-muted mb-4">{{ produto.descricao }}</p>
+    {% set total_reviews = produto.reviews|length %}
+    {% if total_reviews > 0 %}
+      {% set media = (produto.reviews|sum(attribute='nota') / total_reviews)|round(1) %}
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="text-warning fs-5">
+          {% for i in range(1, 6) %}
+            {% if i <= media %}★{% else %}☆{% endif %}
+          {% endfor %}
+        </span>
+        <span class="text-muted small">{{ media }} ({{ total_reviews }} avaliações)</span>
+      </div>
+    {% else %}
+      <p class="text-muted small mb-2">Sem avaliações ainda</p>
+    {% endif %}
+
+    <h3 class="text-danger fw-bold mb-3">R$ {{ "%.2f"|format(produto.preco) }}</h3>
+    <p class="text-muted">{{ produto.descricao }}</p>
 
     <div class="mb-3">
       {% if produto.is_available() %}
-        <span class="badge bg-success fs-6">
-          <i class="bi bi-check-circle me-1"></i>{{ produto.estoque }} em estoque
-        </span>
+        <span class="badge bg-success">✓ Em estoque — {{ produto.estoque }} unidades</span>
       {% else %}
-        <span class="badge bg-danger fs-6">Esgotado</span>
+        <span class="badge bg-secondary">Esgotado</span>
       {% endif %}
     </div>
 
     {% if current_user.is_authenticated and produto.is_available() %}
-      <form method="POST" action="{{ url_for('cart.add', produto_id=produto.id) }}" class="d-flex gap-2 align-items-center">
+      <form method="POST" action="{{ url_for('cart.add', produto_id=produto.id) }}" class="d-flex gap-2">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="number" name="quantidade" value="1" min="1" max="{{ produto.estoque }}"
-               class="form-control" style="width:80px">
-        <button class="btn btn-danger btn-lg flex-grow-1">
-          <i class="bi bi-cart-plus me-2"></i>Adicionar ao carrinho
-        </button>
+        <input type="number" name="quantidade" value="1" min="1" max="{{ produto.estoque }}" class="form-control" style="width:80px">
+        <button class="btn btn-danger px-4">🛒 Adicionar ao carrinho</button>
       </form>
     {% elif not current_user.is_authenticated %}
-      <a href="{{ url_for('auth.login') }}" class="btn btn-outline-danger btn-lg w-100">
-        <i class="bi bi-person me-2"></i>Faça login para comprar
-      </a>
-    {% else %}
-      <button class="btn btn-secondary btn-lg w-100" disabled>Esgotado</button>
+      <a href="{{ url_for('auth.login') }}" class="btn btn-outline-danger">Login para comprar</a>
     {% endif %}
   </div>
 </div>
 
-{% if relacionados %}
-<hr class="my-5">
-<h5 class="fw-bold mb-3">Produtos relacionados</h5>
-<div class="row row-cols-2 row-cols-md-4 g-3">
-  {% for p in relacionados %}
-  <div class="col">
-    <a href="{{ url_for('catalog.detalhe', id=p.id) }}" class="text-decoration-none">
-      <div class="card h-100 text-center p-2">
-        {% if p.image_url %}
-          <img src="{{ p.image_url }}" style="height:120px;object-fit:contain">
-        {% endif %}
-        <p class="fw-bold small mt-2 mb-0">{{ p.nome }}</p>
-        <p class="text-danger fw-bold">R$ {{ "%.2f"|format(p.preco) }}</p>
+<div class="row g-4">
+  <div class="col-md-7">
+    <h5 class="fw-bold mb-3">⭐ Avaliações dos clientes</h5>
+
+    {% if produto.reviews %}
+      {% for r in produto.reviews %}
+      <div class="card shadow-sm mb-3">
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-1">
+            <strong>{{ r.usuario.nome }}</strong>
+            <small class="text-muted">{{ r.created_at.strftime('%d/%m/%Y') }}</small>
+          </div>
+          <div class="text-warning mb-1">
+            {% for i in range(1, 6) %}
+              {% if i <= r.nota %}★{% else %}☆{% endif %}
+            {% endfor %}
+          </div>
+          {% if r.comentario %}
+            <p class="mb-0 text-muted">{{ r.comentario }}</p>
+          {% endif %}
+        </div>
       </div>
-    </a>
+      {% endfor %}
+    {% else %}
+      <div class="alert alert-light">Nenhuma avaliação ainda. Seja o primeiro!</div>
+    {% endif %}
+
+    {% if current_user.is_authenticated %}
+      {% set ja_avaliou = produto.reviews|selectattr('usuario_id', 'equalto', current_user.id)|list %}
+      {% if not ja_avaliou %}
+      <div class="card shadow-sm mt-3">
+        <div class="card-body">
+          <h6 class="fw-bold mb-3">Deixe sua avaliação</h6>
+          <form method="POST" action="{{ url_for('catalog.avaliar', id=produto.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Nota</label>
+              <div class="d-flex gap-2">
+                {% for i in range(1, 6) %}
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="nota" value="{{ i }}" id="nota{{ i }}" required>
+                  <label class="form-check-label" for="nota{{ i }}">{{ i }}★</label>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Comentário (opcional)</label>
+              <textarea name="comentario" class="form-control" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-danger">Enviar avaliação</button>
+          </form>
+        </div>
+      </div>
+      {% endif %}
+    {% endif %}
   </div>
-  {% endfor %}
+
+  {% if relacionados %}
+  <div class="col-md-5">
+    <h5 class="fw-bold mb-3">Produtos relacionados</h5>
+    {% for p in relacionados %}
+    <div class="card shadow-sm mb-2">
+      <div class="d-flex align-items-center p-2 gap-3">
+        {% if p.image_url %}
+          <img src="{{ p.image_url }}" style="width:60px;height:60px;object-fit:contain">
+        {% endif %}
+        <div class="flex-grow-1">
+          <p class="mb-0 fw-bold small">{{ p.nome }}</p>
+          <span class="text-danger fw-bold">R$ {{ "%.2f"|format(p.preco) }}</span>
+        </div>
+        <a href="{{ url_for('catalog.detalhe', id=p.id) }}" class="btn btn-sm btn-outline-danger">Ver</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 </div>
-{% endif %}
 {% endblock %}

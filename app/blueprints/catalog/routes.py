@@ -29,3 +29,37 @@ def detalhe(id):
     ).limit(4).all()
     return render_template('catalog/detalhe.html',
         produto=produto, relacionados=relacionados)
+
+from flask_login import login_required, current_user
+from app.extensions import db
+from app.models.review import Review
+
+@catalog_bp.route('/produto/<int:id>/avaliar', methods=['POST'])
+@login_required
+def avaliar(id):
+    from flask import request, redirect, url_for, flash
+    produto = Product.query.get_or_404(id)
+    nota = int(request.form.get('nota', 0))
+    comentario = request.form.get('comentario', '').strip()
+
+    if nota < 1 or nota > 5:
+        flash('Nota inválida.', 'danger')
+        return redirect(url_for('catalog.detalhe', id=id))
+
+    ja_avaliou = Review.query.filter_by(
+        product_id=id, usuario_id=current_user.id).first()
+
+    if ja_avaliou:
+        flash('Você já avaliou este produto.', 'warning')
+        return redirect(url_for('catalog.detalhe', id=id))
+
+    review = Review(
+        product_id=id,
+        usuario_id=current_user.id,
+        nota=nota,
+        comentario=comentario
+    )
+    db.session.add(review)
+    db.session.commit()
+    flash('Avaliação enviada!', 'success')
+    return redirect(url_for('catalog.detalhe', id=id))
