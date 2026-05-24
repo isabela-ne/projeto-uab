@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">Catálogo Pokémon</h2>
+{% if not current_user.is_authenticated %}
+  <div class="alert alert-info">
+    <a href="{{ url_for('auth.login') }}">Faça login</a> para comprar!
+  </div>
+{% endif %}
+<div class="row">
+  {% for p in produtos %}
+    <div class="col-md-3 mb-4">
+      <div class="card h-100">
+        {% if p.image_url %}
+          <img src="{{ p.image_url }}" class="card-img-top" style="height:180px;object-fit:cover">
+        {% else %}
+          <div class="bg-light d-flex align-items-center justify-content-center" style="height:180px">
+            <span class="text-muted">Sem imagem</span>
+          </div>
+        {% endif %}
+        <div class="card-body">
+          <h6 class="card-title">{{ p.nome }}</h6>
+          <p class="text-danger fw-bold">R$ {{ "%.2f"|format(p.preco) }}</p>
+          <small class="text-muted">Estoque: {{ p.estoque }}</small>
+          <div class="mt-2">
+            {% if p.is_available() %}
+              <span class="badge bg-success">Disponível</span>
+            {% else %}
+              <span class="badge bg-secondary">Esgotado</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <p class="text-muted">Nenhum produto cadastrado ainda.</p>
+  {% endfor %}
+</div>
+{% endblock %}
