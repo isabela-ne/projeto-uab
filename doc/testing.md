@@ -1,1 +1,1 @@
-# Plano de Testes - PokéShop
+# Plano de Testes - PokéPará
