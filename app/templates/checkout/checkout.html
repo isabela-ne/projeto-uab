@@ -31,7 +31,7 @@
   <!-- Formulário -->
   <div class="col-md-7">
     <form method="POST" action="{{ url_for('checkout.finalizar') }}">
-
+       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <h5 class="mb-3">Endereço de entrega</h5>
       <div class="row g-2 mb-3">
         <div class="col-md-8">

@@ -20,6 +20,7 @@
           <div class="mt-auto pt-2">
             {% if current_user.is_authenticated and p.is_available() %}
               <form method="POST" action="{{ url_for('cart.add', produto_id=p.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="quantidade" value="1">
                 <button class="btn btn-danger w-100 btn-sm">
                   Adicionar ao carrinho

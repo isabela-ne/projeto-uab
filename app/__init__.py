@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for
 from dotenv import load_dotenv
 import os
-from app.extensions import db, login_manager, migrate
+from app.extensions import db, login_manager, migrate, csrf
 
 def create_app():
     load_dotenv()
@@ -10,11 +10,14 @@ def create_app():
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///pokeshop.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['WTF_CSRF_ENABLED'] = False
+    app.config['WTF_CSRF_ENABLED'] = True
 
     db.init_app(app)
     login_manager.init_app(app)
     migrate.init_app(app, db)
+    csrf.init_app(app)
+
+    from app.models import user, product, category, order
 
     from app.blueprints.auth.routes import auth_bp
     from app.blueprints.catalog.routes import catalog_bp

@@ -22,6 +22,7 @@
         <td>R$ {{ "%.2f"|format(item.preco * item.quantidade) }}</td>
         <td>
           <form method="POST" action="{{ url_for('cart.remove', pid=pid) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button class="btn btn-sm btn-outline-danger">Remover</button>
           </form>
         </td>
@@ -40,6 +41,7 @@
       Continuar comprando
     </a>
     <form method="POST" action="{{ url_for('cart.clear') }}" class="mt-2">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <button class="btn btn-outline-danger w-100">Esvaziar carrinho</button>
     </form>
   </div>
