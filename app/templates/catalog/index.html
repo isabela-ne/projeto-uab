@@ -9,7 +9,7 @@
 <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
   {% for p in produtos %}
   <div class="col">
-    <div class="card h-100 product-card">
+    <a href="{{ url_for('catalog.detalhe', id=p.id) }}" class="text-decoration-none text-dark"><div class="card h-100 product-card">
       <div class="product-img-wrap">
         {% if p.image_url %}
           <img src="{{ p.image_url }}" alt="{{ p.nome }}" class="product-img">

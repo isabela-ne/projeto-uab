@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, render_template
 from dotenv import load_dotenv
 import os
 from app.extensions import db, login_manager, migrate, csrf
@@ -38,10 +38,13 @@ def create_app():
     @app.route('/')
     def index():
         return redirect(url_for('catalog.index'))
-    # Seed automático ao iniciar
-    with app.app_context():
-        db.create_all()
-        from scripts.seed import run_seed
-        run_seed()
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return render_template('errors/404.html'), 404
+
+    @app.errorhandler(403)
+    def forbidden(e):
+        return render_template('errors/403.html'), 403
 
     return app
