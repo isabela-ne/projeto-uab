@@ -17,7 +17,7 @@ def create_app():
     migrate.init_app(app, db)
     csrf.init_app(app)
 
-    from app.models import user, product, category, order
+    from app.models import user, product, category, order, ticket
 
     from app.blueprints.auth.routes import auth_bp
     from app.blueprints.catalog.routes import catalog_bp

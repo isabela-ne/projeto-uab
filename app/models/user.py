@@ -14,7 +14,9 @@ class User(db.Model, UserMixin):
     ativo = db.Column(db.Boolean, default=True)
 
     def set_password(self, senha):
-        salt = bcrypt.gensalt(rounds=12)
+        from flask import current_app
+        rounds = 4 if current_app and current_app.config.get('TESTING') else 12
+        salt = bcrypt.gensalt(rounds=rounds)
         self.password_hash = bcrypt.hashpw(
             senha.encode('utf-8'), salt
         ).decode('utf-8')
