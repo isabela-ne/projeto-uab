@@ -1,4 +1,4 @@
-# PokéShop — Loja Virtual Pokémon
+# PokéPará — Loja Virtual Pokémon
 
 > Projeto desenvolvido para a disciplina de Desenvolvimento Web — IFTO/UAB 2026
 
