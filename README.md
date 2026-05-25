@@ -4,7 +4,7 @@
 
 ## Sobre o Projeto
 
-A PokéShop é um e-commerce completo de produtos temáticos do universo Pokémon, desenvolvido com Flask (Python). O sistema permite que clientes naveguem pelo catálogo, adicionem produtos ao carrinho, calculem frete e realizem compras. Administradores gerenciam produtos, usuários e cupons de desconto pelo painel admin.
+A PokéPará é um e-commerce completo de produtos temáticos do universo Pokémon, desenvolvido com Flask (Python). O sistema permite que clientes naveguem pelo catálogo, adicionem produtos ao carrinho, calculem frete e realizem compras. Administradores gerenciam produtos, usuários e cupons de desconto pelo painel admin.
 
 ## Funcionalidades
 
