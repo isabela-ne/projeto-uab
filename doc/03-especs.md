@@ -14,6 +14,9 @@ O PokéShop é uma aplicação web desenvolvida em Python com o framework Flask.
 - **Autenticação:** Flask-Login
 - **Segurança:** Flask-WTF (CSRF), bcrypt (hashing de senhas)
 - **Integrações:** ViaCEP (Cálculo de frete)
+- **Cache:** Flask-Caching (SimpleCache, TTL 60s)
+- **Jobs:** rq (fila assíncrona para notificações)
+- **Frontend:** Bootstrap 5, Jinja2
 
 ---
 
@@ -29,6 +32,7 @@ O PokéShop é uma aplicação web desenvolvida em Python com o framework Flask.
 - **Listagem:** Exibição de produtos disponíveis em estoque.
 - **Filtros:** Busca por nome e filtragem por categoria.
 - **Detalhes:** Visualização completa do produto com sugestão de itens relacionados da mesma categoria.
+- **Cache:** Respostas GET em `/catalog/` e `/catalog/produto/<id>` cacheadas por 60 segundos. Cache invalidado em operações de escrita no admin.
 
 ### 2.3. Carrinho de Compras (`cart`)
 - **Gestão de Itens:** Adicionar, remover e limpar o carrinho (armazenado em sessão).
@@ -40,6 +44,7 @@ O PokéShop é uma aplicação web desenvolvida em Python com o framework Flask.
 - **Endereçamento:** Coleta de dados de entrega.
 - **Pagamento:** Suporte a Cartão de Crédito, PIX e Boleto.
 - **Finalização:** Criação do pedido, registro dos itens e baixa automática no estoque.
+- **Notificação:** Envio de e-mail de confirmação via fila assíncrona (rq).
 
 ### 2.5. Pedidos (`orders`)
 - **Histórico:** Visualização da lista de pedidos realizados pelo cliente.
@@ -149,3 +154,95 @@ O PokéShop é uma aplicação web desenvolvida em Python com o framework Flask.
 | | `/admin/produtos` | GET, POST | Gestão de inventário |
 | | `/admin/pedidos` | GET | Gestão de vendas e status |
 | | `/admin/usuarios` | GET | Gestão de equipe de atendimento |
+
+---
+
+## 6. Especificações de Frontend
+
+### 6.1. Design System
+
+- **Framework CSS:** Bootstrap 5
+- **Tipografia:** padrão Bootstrap; hierarquia `h1 > h2 > h3` respeitada por página
+- **Cores:** paleta consistente com tema Pokémon; botões de ação primária em destaque
+- **Ícones:** Bootstrap Icons ou equivalente já presente no projeto
+- **Imagens de produto:** proporção 1:1, fallback com placeholder quando `image_url` ausente
+
+### 6.2. Responsividade
+
+Todas as páginas devem funcionar nos seguintes breakpoints Bootstrap:
+
+| Breakpoint | Largura | Comportamento |
+|------------|---------|---------------|
+| Mobile | < 576px | Menu colapsado, cards em coluna única, formulários em bloco |
+| Tablet | 576–991px | Grid de 2 colunas para produtos |
+| Desktop | ≥ 992px | Grid de 3–4 colunas para produtos, sidebar visível |
+
+### 6.3. Acessibilidade
+
+- Todos os `<img>` devem ter atributo `alt` descritivo
+- Todos os campos de formulário devem ter `<label>` associado via `for`/`id`
+- Botões de ação devem ter texto visível ou `aria-label`
+- Contraste mínimo de 4.5:1 entre texto e fundo
+- Navegação por teclado funcional em formulários e menus
+- Foco visível (`outline`) nunca removido via CSS sem substituto
+
+### 6.4. Estados de Tela
+
+#### Catálogo
+- **Carregando:** spinner Bootstrap centralizado enquanto a listagem carrega
+- **Vazio:** mensagem `"Nenhum produto encontrado."` quando busca não retorna resultados
+- **Erro:** mensagem genérica `"Erro ao carregar produtos. Tente novamente."` em caso de falha
+
+#### Carrinho
+- **Vazio:** mensagem `"Seu carrinho está vazio."` com link para o catálogo
+- **Frete não calculado:** total exibido sem frete até CEP ser informado
+- **Calculando frete:** botão desabilitado com spinner enquanto requisição ViaCEP está em andamento
+- **CEP inválido:** mensagem de erro inline abaixo do campo
+
+#### Checkout
+- **Campos obrigatórios:** validação HTML5 + feedback visual Bootstrap (`is-invalid`) antes do envio
+- **Processando pedido:** botão "Finalizar" desabilitado após primeiro clique para evitar duplo envio
+- **Sucesso:** redirecionamento para página de detalhe do pedido com mensagem flash de confirmação
+
+#### Pedidos
+- **Histórico vazio:** mensagem `"Você ainda não realizou nenhum pedido."` com link para o catálogo
+- **Status:** badge colorido por status (aguardando = amarelo, pago = azul, enviado = verde, cancelado = vermelho)
+
+#### Suporte
+- **Sem chamados:** mensagem `"Você não possui chamados abertos."` com link para abrir novo
+- **Ticket fechado:** campo de resposta desabilitado com aviso `"Este chamado está encerrado."`
+
+#### Admin
+- **Estoque crítico:** produtos com `estoque <= 5` destacados com badge vermelho no dashboard e na listagem
+- **Ação destrutiva:** confirmação via modal Bootstrap antes de remover atendente ou produto
+
+### 6.5. Formulários
+
+- Feedback de erro exibido inline abaixo do campo afetado (classe `invalid-feedback` do Bootstrap)
+- Mensagens flash exibidas no topo da página, dispensáveis pelo usuário (botão ×)
+- Campos de senha com opção de revelar/ocultar (toggle de visibilidade)
+- CEP com máscara `#####-###` e auto-preenchimento de endereço via ViaCEP após digitação
+
+### 6.6. Navegação
+
+- Navbar fixa no topo com links para: Catálogo, Carrinho (com contador de itens), Login/Logout, Admin (se Administrador)
+- Breadcrumb nas páginas de detalhe de produto e detalhe de pedido
+- Redirecionamento pós-login para a página de origem (parâmetro `next`)
+- Páginas de erro 403 e 404 com layout padrão do projeto e link de retorno ao catálogo
+
+### 6.7. Integração Frontend/Backend
+
+- Respostas de erro do backend mapeadas para mensagens amigáveis na interface
+- Frete calculado via POST assíncrono (fetch/AJAX) sem recarregar a página
+- Formulário de login desabilitado durante requisição para evitar múltiplos envios
+- Invalidação de cache do catálogo refletida imediatamente após salvar produto no admin
+
+---
+
+## 7. Otimizações Implementadas
+
+- **Cache:** rotas GET do catálogo com TTL de 60 segundos via Flask-Caching
+- **Fila assíncrona:** envio de e-mail de confirmação de pedido via rq, desacoplado do fluxo HTTP
+- **Entry point único:** `app/run.py` removido; apenas `./run.py` na raiz
+- **Extensions centralizadas:** `app/extensions.py` como fonte única de `db`, `login_manager`, `cache`
+- **Dependências limpas:** `stripe` e `mercadopago` removidos (não implementados)
