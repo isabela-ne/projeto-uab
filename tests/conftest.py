@@ -64,8 +64,8 @@ def setup_data(db_session):
     db_session.commit()
 
     # Criar produtos
-    p1 = Product(nome="Pikachu VMAX", preco=150.0, estoque=10, categoria_id=c1.id)
-    p2 = Product(nome="Escudo Protetor", preco=50.0, estoque=0, categoria_id=c2.id)
+    p1 = Product(nome="Pikachu VMAX", descricao="Uma carta rara", preco=150.0, estoque=10, categoria_id=c1.id)
+    p2 = Product(nome="Escudo Protetor", descricao="Proteja suas cartas", preco=50.0, estoque=0, categoria_id=c2.id)
     db_session.add_all([p1, p2])
     db_session.commit()
 
