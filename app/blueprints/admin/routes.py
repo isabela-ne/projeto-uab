@@ -54,9 +54,14 @@ def produto_novo():
     if request.method == 'POST':
         nome      = request.form.get('nome', '').strip()
         descricao = request.form.get('descricao', '').strip()
-        preco     = float(request.form.get('preco', 0))
-        estoque   = int(request.form.get('estoque', 0))
-        cat_id    = int(request.form.get('categoria_id'))
+        try:
+            preco     = float(request.form.get('preco', 0))
+            estoque   = int(request.form.get('estoque', 0))
+            cat_id    = int(request.form.get('categoria_id'))
+        except ValueError:
+            flash('Preço, estoque e categoria devem ser valores válidos.', 'danger')
+            return render_template('admin/produto_form.html', categorias=categorias)
+
         image_url = request.form.get('image_url', '').strip()
         if preco <= 0:
             flash('O preço deve ser maior que zero.', 'danger')
@@ -78,9 +83,14 @@ def produto_editar(produto_id):
     if request.method == 'POST':
         p.nome        = request.form.get('nome', '').strip()
         p.descricao   = request.form.get('descricao', '').strip()
-        p.preco       = float(request.form.get('preco', 0))
-        p.estoque     = int(request.form.get('estoque', 0))
-        p.categoria_id= int(request.form.get('categoria_id'))
+        try:
+            p.preco       = float(request.form.get('preco', 0))
+            p.estoque     = int(request.form.get('estoque', 0))
+            p.categoria_id= int(request.form.get('categoria_id'))
+        except ValueError:
+            flash('Preço, estoque e categoria devem ser valores válidos.', 'danger')
+            return render_template('admin/produto_form.html', categorias=categorias, produto=p)
+
         p.image_url   = request.form.get('image_url', '').strip()
         if p.preco <= 0:
             flash('O preço deve ser maior que zero.', 'danger')
@@ -133,6 +143,9 @@ def atendente_novo():
 @admin_required
 def atendente_excluir(id):
     u = User.query.get_or_404(id)
+    if u.id == current_user.id or u.role == 'Administrador':
+        flash('Não é possível excluir a si mesmo ou outro administrador.', 'danger')
+        return redirect(url_for('admin.usuarios'))
     db.session.delete(u)
     db.session.commit()
     flash('Atendente removido.', 'info')
@@ -144,10 +157,12 @@ def atendente_excluir(id):
 @admin_required
 def pedidos():
     status = request.args.get('status', '')
-    if status:
+    status_validos = ['aguardando_pagamento', 'pago', 'em_separacao', 'enviado', 'entregue', 'cancelado']
+    if status and status in status_validos:
         lista = Order.query.filter_by(status=status).order_by(Order.created_at.desc()).all()
     else:
         lista = Order.query.order_by(Order.created_at.desc()).all()
+        status = ''
     return render_template('admin/pedidos.html', pedidos=lista, status_filtro=status)
 
 @admin_bp.route('/pedidos/<int:id>')

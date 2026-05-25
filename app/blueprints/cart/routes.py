@@ -19,6 +19,10 @@ def add(produto_id):
     produto = Product.query.get_or_404(produto_id)
     quantidade = int(request.form.get('quantidade', 1))
 
+    if quantidade > 99:
+        flash('Quantidade máxima permitida por item é 99.', 'warning')
+        return redirect(url_for('catalog.index'))
+
     if quantidade > produto.estoque:
         flash('Estoque insuficiente!', 'danger')
         return redirect(url_for('catalog.index'))
@@ -123,7 +127,7 @@ def calcular_frete():
         session.modified = True
         flash(f'Frete calculado para {cidade}/{estado}!', 'success')
 
-    except Exception:
+    except (requests.exceptions.RequestException, ValueError, KeyError):
         flash('Erro ao consultar o CEP. Tente novamente.', 'danger')
 
     return redirect(url_for('cart.view'))
